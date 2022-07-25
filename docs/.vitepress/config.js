@@ -11,7 +11,7 @@ module.exports = {
     },
     socialLinks: [{ icon: 'github', link: 'https://github.com/donaf/fe-process' }],
     editLink: {
-      pattern: 'https://github.com/donaf/fe-process/tree/doc/docs/:path',
+      pattern: 'https://github.com/donaf/fe-process/tree/docs/docs/:path',
       text: '在GitHub编辑此页',
     },
     footer: {
@@ -33,8 +33,7 @@ function sidebarGuide() {
       text: '介绍',
       collapsible: true,
       items: [
-        { text: '介绍', link: '/guide/' },
-        { text: '快速上手', link: '/guide/start' },
+        { text: '开始', link: '/guide/start' },
       ],
     }
   ]
