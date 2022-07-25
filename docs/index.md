@@ -13,7 +13,7 @@ hero:
       link: /guide/
     - theme: alt
       text: View on GitHub
-      link: https://github.com/tobe-fe-dalao/fastool
+      link: https://github.com/donaf/fe-process
 
 features:
   - title: Vue3 + TypeScript
