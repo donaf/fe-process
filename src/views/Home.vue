@@ -12,7 +12,7 @@ let text = "";
 const list: Todo[] = reactive([
   {
     status: true,
-    editable: true,
+    editable: false,
     text: "初始化",
   },
   {
@@ -52,8 +52,7 @@ const leftNum = computed(() => list.filter((item) => !item.status).length);
  * 编辑
  * @param item
  */
-//TODO 双击聚焦输入框
-const onClickInput = (item: Todo) => {
+const onClickInput = (item: Todo, e: any) => {
   item.editable = true;
 };
 
@@ -61,16 +60,34 @@ const onClickInput = (item: Todo) => {
  * 确认修改
  * @param item
  */
-// TODO 点击确认按钮，内容才保存
-const onConfirm = (item: Todo) => {
-  //
+const onConfirm = (item: Todo, index: number) => {
+  // list[index].editable = true;
+  if (!item.text.trim()) {
+    list.splice(index, 1);
+  }
+  item.editable = false;
+};
+
+/**
+ * input失焦
+ * @param item
+ * @param index
+ * @param e
+ */
+const onBlurEdit = (item: Todo, index: number, e: any) => {
+  if (!e.target.value.trim()) {
+    list.splice(index, 1);
+  }
+  item.editable = false;
 };
 </script>
 
 <template>
   <div class="todo-conainter">
     <div class="header">
+      <!-- TODO 回车键添加 -->
       <input
+        autofocus
         class="input-class"
         type="text"
         v-model="text"
@@ -85,18 +102,22 @@ const onConfirm = (item: Todo) => {
         <li class="li" v-for="(item, index) in list" :key="index">
           <span class="li-left">
             <input type="checkbox" class="checkbox" v-model="item.status" />
-            <b
-              :class="{ 'text-done': item.status }"
-              @click="onClickInput(item)"
-            >
+            <b :class="{ 'text-done': item.status }">
               <input
+                :ref="`liText[${index}]`"
                 class="li-text"
-                :class="{ 'li-text_active': item.editable }"
                 type="text"
                 v-model="item.text"
-                :disabled="!item.editable"
+                @click="onClickInput(item, $event)"
+                @blur="onBlurEdit(item, index, $event)"
               />
-              <button class="btn-confirm" @click="onConfirm(item)">确认</button>
+              <button
+                class="btn-confirm"
+                @click="onConfirm(item, index)"
+                v-if="item.editable"
+              >
+                确认
+              </button>
             </b>
           </span>
           <span class="delete" @click="onDelete(index)">删除</span>
@@ -104,8 +125,9 @@ const onConfirm = (item: Todo) => {
       </ul>
     </div>
     <div class="footer" v-if="list && list.length > 0">
-      <div>剩余：{{ leftNum }}项</div>
-      <div>总共：{{ list.length }}项</div>
+      <div>
+        剩 <b>{{ leftNum }}</b> / 总 <b> {{ list.length }} </b>
+      </div>
     </div>
   </div>
 </template>
