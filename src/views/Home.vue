@@ -9,6 +9,7 @@ interface Todo {
 
 let text = "";
 
+const allChecked = ref(false); // 全选
 const list: Todo[] = reactive([
   {
     status: true,
@@ -80,6 +81,13 @@ const onBlurEdit = (item: Todo, index: number, e: any) => {
   }
   item.editable = false;
 };
+
+const toggleChecked = () => {
+  allChecked.value = !allChecked.value;
+  list.forEach(item => {
+    item.status = allChecked.value
+  })
+};
 </script>
 
 <template>
@@ -125,6 +133,15 @@ const onBlurEdit = (item: Todo, index: number, e: any) => {
       </ul>
     </div>
     <div class="footer" v-if="list && list.length > 0">
+      <div class="allChecked-container">
+        <input
+          type="checkbox"
+          :checked="allChecked"
+          class="checkbox"
+          @change="toggleChecked"
+        />
+        <label class="allChecked-label">全部标记为已完成</label>
+      </div>
       <div>
         剩 <b>{{ leftNum }}</b> / 总 <b> {{ list.length }} </b>
       </div>
@@ -210,6 +227,15 @@ li {
 }
 
 .btn-confirm {
+  margin-left: 10px;
+}
+.allChecked-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.allChecked-label {
   margin-left: 10px;
 }
 </style>
