@@ -7,7 +7,7 @@ interface Todo {
   editable: boolean; //是否可编辑
 }
 
-let text = "";
+let text = ref("");
 
 const allChecked = ref(false); // 全选
 const list: Todo[] = reactive([
@@ -23,8 +23,14 @@ const list: Todo[] = reactive([
   },
 ]);
 
+/**
+ * 输入框
+ * @param e
+ */
 const onInput = (e: any) => {
-  text = e.target.value;
+  let value = e.target.value;
+  if (!value.trim()) return;
+  text.value = e.target.value;
 };
 
 /**
@@ -34,10 +40,10 @@ const add = () => {
   let todo = {
     status: false,
     editable: false,
-    text,
+    text: text.value,
   };
   list.push(todo);
-  text = "";
+  text.value = "";
 };
 
 /**
@@ -82,11 +88,14 @@ const onBlurEdit = (item: Todo, index: number, e: any) => {
   item.editable = false;
 };
 
+/**
+ * 全选
+ */
 const toggleChecked = () => {
   allChecked.value = !allChecked.value;
-  list.forEach(item => {
-    item.status = allChecked.value
-  })
+  list.forEach((item) => {
+    item.status = allChecked.value;
+  });
 };
 </script>
 
@@ -102,7 +111,9 @@ const toggleChecked = () => {
         placeholder="代办项"
         @input="onInput"
       />
-      <button class="btn" @click="add">添加</button>
+      <button class="btn" @click="add" :disabled="!text.trim().length">
+        添加
+      </button>
     </div>
     <div class="content" v-if="list && list.length > 0">
       <h1 class="title">列表</h1>
@@ -110,10 +121,11 @@ const toggleChecked = () => {
         <li class="li" v-for="(item, index) in list" :key="index">
           <span class="li-left">
             <input type="checkbox" class="checkbox" v-model="item.status" />
-            <b :class="{ 'text-done': item.status }">
+            <b>
               <input
                 :ref="`liText[${index}]`"
                 class="li-text"
+                :class="{ 'li-text_done': item.status }"
                 type="text"
                 v-model="item.text"
                 @click="onClickInput(item, $event)"
@@ -207,16 +219,16 @@ li {
   width: 24px;
   height: 24px;
 }
-.text-done {
-  text-decoration: line-through;
-}
-
 .li-text {
   padding: 8px 10px;
   font-size: 16px;
   background: none;
   border: none;
 }
+.li-text_done {
+  text-decoration: line-through;
+}
+
 .li-text_active {
   border: 1px solid #ddd;
   border-radius: 3px;
