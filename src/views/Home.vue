@@ -1,111 +1,86 @@
 <script lang="ts" setup>
-import { ref, reactive, computed } from "vue";
+import { ref, watch } from "vue";
+import TodoItem from "../components/TodoItem.vue";
+import { useTodoStore } from "../store/modules/todo/index";
+import { storeToRefs } from "pinia";
+let text = ref("");
 
-interface Todo {
-  status: boolean;
-  text: string;
-  editable: boolean; //是否可编辑
-}
+const todoStore = useTodoStore();
 
-let text = "";
+const { todos, leftNum, fiterTodos } = storeToRefs(todoStore);
 
-const list: Todo[] = reactive([
-  {
-    status: true,
-    editable: true,
-    text: "初始化",
-  },
-  {
-    status: false,
-    editable: false,
-    text: "编写html",
-  },
-]);
+const allChecked = ref(false); // 全选
+watch(todoStore.todos, (todos) => {
+  allChecked.value = todos.every((item) => item.status);
+});
 
+/**
+ * 输入框
+ * @param e
+ */
 const onInput = (e: any) => {
-  text = e.target.value;
+  let value = e.target.value;
+  if (!value.trim()) return;
+  text.value = e.target.value;
 };
 
 /**
  * 新增
  */
 const add = () => {
-  let todo = {
-    status: false,
-    editable: false,
-    text,
-  };
-  list.push(todo);
-  text = "";
+  todoStore.addTodo(text.value);
+  text.value = "";
 };
 
 /**
- * 删除
+ * 全选
  */
-const onDelete = (index: number) => {
-  list.splice(index, 1);
-};
-
-const leftNum = computed(() => list.filter((item) => !item.status).length);
-
-/**
- * 编辑
- * @param item
- */
-//TODO 双击聚焦输入框
-const onClickInput = (item: Todo) => {
-  item.editable = true;
-};
-
-/**
- * 确认修改
- * @param item
- */
-// TODO 点击确认按钮，内容才保存
-const onConfirm = (item: Todo) => {
-  //
+const toggleChecked = () => {
+  allChecked.value = !allChecked.value;
+  todos.value.forEach((item) => {
+    item.status = allChecked.value;
+  });
 };
 </script>
 
 <template>
   <div class="todo-conainter">
     <div class="header">
+      <!-- TODO 回车键添加 -->
       <input
+        autofocus
         class="input-class"
         type="text"
         v-model="text"
         placeholder="代办项"
         @input="onInput"
       />
-      <button class="btn" @click="add">添加</button>
+      <button class="btn" @click="add" :disabled="!text.trim().length">添加</button>
     </div>
-    <div class="content" v-if="list && list.length > 0">
+    <div class="content" v-if="fiterTodos && fiterTodos.length > 0">
       <h1 class="title">列表</h1>
       <ul>
-        <li class="li" v-for="(item, index) in list" :key="index">
-          <span class="li-left">
-            <input type="checkbox" class="checkbox" v-model="item.status" />
-            <b
-              :class="{ 'text-done': item.status }"
-              @click="onClickInput(item)"
-            >
-              <input
-                class="li-text"
-                :class="{ 'li-text_active': item.editable }"
-                type="text"
-                v-model="item.text"
-                :disabled="!item.editable"
-              />
-              <button class="btn-confirm" @click="onConfirm(item)">确认</button>
-            </b>
-          </span>
-          <span class="delete" @click="onDelete(index)">删除</span>
-        </li>
+        <TodoItem
+          v-for="(todo, index) in fiterTodos"
+          :key="index"
+          :todo="todo"
+          @on-delete="todoStore.deleteTodo(index)"
+        />
       </ul>
     </div>
-    <div class="footer" v-if="list && list.length > 0">
-      <div>剩余：{{ leftNum }}项</div>
-      <div>总共：{{ list.length }}项</div>
+    <div class="footer" v-if="todos && todos.length > 0">
+      <div class="allChecked-container">
+        <div class="allChecked-container-left" @click="toggleChecked">
+          <input type="checkbox" :checked="allChecked" class="checkbox" />
+          <label class="allChecked-label">全部标记为已完成</label>
+        </div>
+        <div class="allChecked-container-right">
+          <span class="clear-all" @click="todoStore.$reset()">清空所有</span>
+        </div>
+      </div>
+      <div>
+        剩 <b>{{ leftNum }}</b> / 总 <b> {{ todos.length }} </b>
+      </div>
     </div>
   </div>
 </template>
@@ -114,10 +89,12 @@ const onConfirm = (item: Todo) => {
 .todo-conainter {
   padding: 20px;
 }
+
 .header {
   display: flex;
   flex-wrap: wrap;
 }
+
 .input-class {
   margin-right: 20px;
   padding: 10px;
@@ -128,6 +105,7 @@ const onConfirm = (item: Todo) => {
   border: 1px solid rgba(200, 200, 200);
   border-radius: 5px;
 }
+
 .btn {
   padding: 10px;
   height: 48px;
@@ -148,46 +126,26 @@ ul,
 li {
   list-style: none;
 }
-.li {
+
+.allChecked-container {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  margin-bottom: 16px;
-  padding-bottom: 16px;
-  font-size: 16px;
-  border-bottom: 1px solid #ddd;
+  margin-bottom: 20px;
+  cursor: pointer;
 }
-.li-left {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
+
+.allChecked-label {
+  margin-left: 10px;
 }
+
 .checkbox {
   margin-right: 10px;
   width: 24px;
   height: 24px;
 }
-.text-done {
-  text-decoration: line-through;
-}
 
-.li-text {
-  padding: 8px 10px;
-  font-size: 16px;
-  background: none;
-  border: none;
-}
-.li-text_active {
-  border: 1px solid #ddd;
-  border-radius: 3px;
-}
-.delete {
+.clear-all {
+  font-weight: bold;
   color: red;
-  cursor: pointer;
-}
-
-.btn-confirm {
-  margin-left: 10px;
 }
 </style>
