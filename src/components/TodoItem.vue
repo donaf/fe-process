@@ -1,6 +1,4 @@
 <script lang="ts" setup>
-import { defineProps } from "vue";
-
 interface Todo {
   status: boolean;
   text: string;
@@ -14,17 +12,20 @@ const props = defineProps({
   },
 });
 
+const emit = defineEmits(["on-delete"]);
+
 /**
  * 删除
  */
-const onDelete = () => {};
+const onDelete = () => {
+  emit("on-delete");
+};
 
 /**
  * 编辑
  * @param item
  */
-const onClickInput = () => {
-};
+const onClickInput = () => {};
 
 /**
  * 确认修改
@@ -39,7 +40,6 @@ const onConfirm = () => {};
  * @param e
  */
 const onBlurEdit = () => {};
-
 </script>
 
 <template>
@@ -55,11 +55,7 @@ const onBlurEdit = () => {};
           @click="onClickInput"
           @blur="onBlurEdit"
         />
-        <button
-          class="btn-confirm"
-          @click="onConfirm"
-          v-if="props.todo.editable"
-        >
+        <button class="btn-confirm" @click="onConfirm" v-if="props.todo.editable">
           确认
         </button>
       </b>
@@ -79,22 +75,26 @@ const onBlurEdit = () => {};
   font-size: 16px;
   border-bottom: 1px solid #ddd;
 }
+
 .li-left {
   display: flex;
   justify-content: flex-start;
   align-items: center;
 }
+
 .checkbox {
   margin-right: 10px;
   width: 24px;
   height: 24px;
 }
+
 .li-text {
   padding: 8px 10px;
   font-size: 16px;
   background: none;
   border: none;
 }
+
 .li-text_done {
   text-decoration: line-through;
 }
@@ -103,6 +103,7 @@ const onBlurEdit = () => {};
   border: 1px solid #ddd;
   border-radius: 3px;
 }
+
 .delete {
   color: red;
   cursor: pointer;

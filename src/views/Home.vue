@@ -50,7 +50,6 @@ const add = () => {
 
 const leftNum = computed(() => list.filter((item) => !item.status).length);
 
-
 /**
  * 全选
  */
@@ -59,6 +58,10 @@ const toggleChecked = () => {
   list.forEach((item) => {
     item.status = allChecked.value;
   });
+};
+
+const onDelete = (index: number) => {
+  list.splice(index, 1);
 };
 </script>
 
@@ -74,14 +77,17 @@ const toggleChecked = () => {
         placeholder="代办项"
         @input="onInput"
       />
-      <button class="btn" @click="add" :disabled="!text.trim().length">
-        添加
-      </button>
+      <button class="btn" @click="add" :disabled="!text.trim().length">添加</button>
     </div>
     <div class="content" v-if="list && list.length > 0">
       <h1 class="title">列表</h1>
       <ul>
-        <TodoItem v-for="(todo, index) in list" :key="index" :todo="todo" />
+        <TodoItem
+          v-for="(todo, index) in list"
+          :key="index"
+          :todo="todo"
+          @on-delete="onDelete(index)"
+        />
       </ul>
     </div>
     <div class="footer" v-if="list && list.length > 0">
