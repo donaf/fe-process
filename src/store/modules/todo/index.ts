@@ -6,18 +6,7 @@ export const useTodoStore = defineStore(
   {
     state: (): TodoState => {
       return {
-        todos: [
-          {
-            status: true,
-            editable: false,
-            text: "初始化",
-          },
-          {
-            status: false,
-            editable: false,
-            text: "编写html",
-          },
-        ]
+        todos: []
       }
     },
     getters: {

@@ -34,73 +34,33 @@ const onConfirmEdit = () => {
 </script>
 
 <template>
-  <li class="li">
-    <span class="li-left">
-      <input type="checkbox" class="checkbox" v-model="props.todo.status" />
-      <b>
+  <li class="flex flex-wrap items-center justify-between mb-3 pt-3">
+    <span class="flex items-center">
+      <input
+        type="checkbox"
+        class="form-checkbox w-6 h-6 rounded-1"
+        v-model="props.todo.status"
+      />
+      <b class="mx-3">
         <input
-          class="li-text"
-          :class="{ 'li-text_done': props.todo.status }"
+          class="form-input p-2 pl-3 pr-3 rounded border-0 text-lg"
+          :class="{ 'line-through': props.todo.status }"
           type="text"
           v-model="props.todo.text"
           @click="onClickInput"
           @blur="onConfirmEdit"
         />
-        <button class="btn-confirm" @click="onConfirmEdit" v-if="props.todo.editable">
+        <button
+          class="mx-4 p-2 text-base cursor-pointer bg-blue-600 rounded-md text-light-50"
+          @click="onConfirmEdit"
+          v-if="props.todo.editable"
+        >
           确认
         </button>
       </b>
     </span>
-    <span class="delete" @click="onDelete">删除</span>
+    <div class="text-red-500 cursor-pointer" @click="onDelete">删除</div>
   </li>
 </template>
 
-<style scoped>
-.li {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  margin-bottom: 16px;
-  padding-bottom: 16px;
-  font-size: 16px;
-  border-bottom: 1px solid #ddd;
-}
-
-.li-left {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-}
-
-.checkbox {
-  margin-right: 10px;
-  width: 24px;
-  height: 24px;
-}
-
-.li-text {
-  padding: 8px 10px;
-  font-size: 16px;
-  background: none;
-  border: none;
-}
-
-.li-text_done {
-  text-decoration: line-through;
-}
-
-.li-text_active {
-  border: 1px solid #ddd;
-  border-radius: 3px;
-}
-
-.delete {
-  color: red;
-  cursor: pointer;
-}
-
-.btn-confirm {
-  margin-left: 10px;
-}
-</style>
+<style scoped></style>

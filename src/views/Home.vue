@@ -44,22 +44,35 @@ const toggleChecked = () => {
 </script>
 
 <template>
-  <div class="todo-conainter">
-    <div class="header">
+  <div class="container mx-auto p-4 py-10 text-lg">
+    <div class="">
       <!-- TODO 回车键添加 -->
       <input
         autofocus
-        class="input-class"
+        class="form-input w-100 border-1 rounded-md border-gray-300 p-2 px-3"
         type="text"
         v-model="text"
         placeholder="代办项"
         @input="onInput"
       />
-      <button class="btn" @click="add" :disabled="!text.trim().length">添加</button>
+      <button
+        class="mx-4 p-2 px-4 bg-blue-600 rounded-md text-light-50 text-base"
+        @click="add"
+        :disabled="!text.trim().length"
+      >
+        添加
+      </button>
     </div>
-    <div class="content" v-if="fiterTodos && fiterTodos.length > 0">
-      <h1 class="title">列表</h1>
-      <ul>
+    <section
+      class="border p-4 pb-1 my-6 rounded-md shadow-lg"
+      v-if="fiterTodos && fiterTodos.length > 0"
+    >
+      <h1 class="text-2xl font-bold text-gray-500">
+        <span>列表</span>
+        <span class="text-lg ml-2">({{ leftNum }}/{{ todos.length }})</span>
+      </h1>
+
+      <ul class="list-none divide-y">
         <TodoItem
           v-for="(todo, index) in fiterTodos"
           :key="index"
@@ -67,85 +80,25 @@ const toggleChecked = () => {
           @on-delete="todoStore.deleteTodo(index)"
         />
       </ul>
-    </div>
-    <div class="footer" v-if="todos && todos.length > 0">
-      <div class="allChecked-container">
-        <div class="allChecked-container-left" @click="toggleChecked">
-          <input type="checkbox" :checked="allChecked" class="checkbox" />
-          <label class="allChecked-label">全部标记为已完成</label>
+    </section>
+    <footer class="pl-4 pr-4" v-if="todos && todos.length > 0">
+      <div class="flex flex-wrap justify-between">
+        <div class="cursor-pointer" @click="toggleChecked">
+          <input
+            type="checkbox"
+            :checked="allChecked"
+            class="form-checkbox w-6 h-6 rounded-1"
+          />
+          <label class="mx-5 text-lg">全部标记</label>
         </div>
-        <div class="allChecked-container-right">
-          <span class="clear-all" @click="todoStore.$reset()">清空所有</span>
+        <div class="">
+          <span class="text-red-500 cursor-pointer" @click="todoStore.$reset()"
+            >清空所有</span
+          >
         </div>
       </div>
-      <div>
-        剩 <b>{{ leftNum }}</b> / 总 <b> {{ todos.length }} </b>
-      </div>
-    </div>
+    </footer>
   </div>
 </template>
 
-<style scoped>
-.todo-conainter {
-  padding: 20px;
-}
-
-.header {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.input-class {
-  margin-right: 20px;
-  padding: 10px;
-  width: 300px;
-  height: 48px;
-  font-size: 16px;
-  box-sizing: border-box;
-  border: 1px solid rgba(200, 200, 200);
-  border-radius: 5px;
-}
-
-.btn {
-  padding: 10px;
-  height: 48px;
-  font-size: 16px;
-  font-weight: bold;
-  box-sizing: border-box;
-  color: #fff;
-  background: rgba(59, 134, 232);
-  border: 1px solid rgba(59, 134, 232);
-  border-radius: 5px;
-}
-
-.title {
-  margin: 20px 0;
-}
-
-ul,
-li {
-  list-style: none;
-}
-
-.allChecked-container {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 20px;
-  cursor: pointer;
-}
-
-.allChecked-label {
-  margin-left: 10px;
-}
-
-.checkbox {
-  margin-right: 10px;
-  width: 24px;
-  height: 24px;
-}
-
-.clear-all {
-  font-weight: bold;
-  color: red;
-}
-</style>
+<style scoped></style>
