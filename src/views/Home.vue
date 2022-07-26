@@ -2,10 +2,12 @@
 import { ref, watch } from "vue";
 import TodoItem from "../components/TodoItem.vue";
 import { useTodoStore } from "../store/modules/todo/index";
-
+import { storeToRefs } from "pinia";
 let text = ref("");
 
 const todoStore = useTodoStore();
+
+const { todos, leftNum, fiterTodos } = storeToRefs(todoStore);
 
 const allChecked = ref(false); // 全选
 watch(todoStore.todos, (todos) => {
@@ -35,7 +37,7 @@ const add = () => {
  */
 const toggleChecked = () => {
   allChecked.value = !allChecked.value;
-  todoStore.todos.forEach((item) => {
+  todos.value.forEach((item) => {
     item.status = allChecked.value;
   });
 };
@@ -55,18 +57,18 @@ const toggleChecked = () => {
       />
       <button class="btn" @click="add" :disabled="!text.trim().length">添加</button>
     </div>
-    <div class="content" v-if="todoStore.fiterTodos && todoStore.fiterTodos.length > 0">
+    <div class="content" v-if="fiterTodos && fiterTodos.length > 0">
       <h1 class="title">列表</h1>
       <ul>
         <TodoItem
-          v-for="(todo, index) in todoStore.fiterTodos"
+          v-for="(todo, index) in fiterTodos"
           :key="index"
           :todo="todo"
           @on-delete="todoStore.deleteTodo(index)"
         />
       </ul>
     </div>
-    <div class="footer" v-if="todoStore.todos && todoStore.todos.length > 0">
+    <div class="footer" v-if="todos && todos.length > 0">
       <div class="allChecked-container">
         <div class="allChecked-container-left" @click="toggleChecked">
           <input type="checkbox" :checked="allChecked" class="checkbox" />
@@ -77,7 +79,7 @@ const toggleChecked = () => {
         </div>
       </div>
       <div>
-        剩 <b>{{ todoStore.leftNum }}</b> / 总 <b> {{ todoStore.todos.length }} </b>
+        剩 <b>{{ leftNum }}</b> / 总 <b> {{ todos.length }} </b>
       </div>
     </div>
   </div>

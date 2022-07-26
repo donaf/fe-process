@@ -2,8 +2,8 @@ import { defineStore } from 'pinia'
 import { TodoState } from './types';
 
 export const useTodoStore = defineStore(
+  'todo',
   {
-    id: 'todo',
     state: (): TodoState => {
       return {
         todos: [
