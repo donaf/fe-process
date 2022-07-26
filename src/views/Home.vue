@@ -67,9 +67,14 @@ const toggleChecked = () => {
       </ul>
     </div>
     <div class="footer" v-if="todoStore.todos && todoStore.todos.length > 0">
-      <div class="allChecked-container" @click="toggleChecked">
-        <input type="checkbox" :checked="allChecked" class="checkbox" />
-        <label class="allChecked-label">全部标记为已完成</label>
+      <div class="allChecked-container">
+        <div class="allChecked-container-left" @click="toggleChecked">
+          <input type="checkbox" :checked="allChecked" class="checkbox" />
+          <label class="allChecked-label">全部标记为已完成</label>
+        </div>
+        <div class="allChecked-container-right">
+          <span class="clear-all" @click="todoStore.$reset()">清空所有</span>
+        </div>
       </div>
       <div>
         剩 <b>{{ todoStore.leftNum }}</b> / 总 <b> {{ todoStore.todos.length }} </b>
@@ -121,7 +126,8 @@ li {
 }
 
 .allChecked-container {
-  display: inline-flex;
+  display: flex;
+  justify-content: space-between;
   margin-bottom: 20px;
   cursor: pointer;
 }
@@ -134,5 +140,10 @@ li {
   margin-right: 10px;
   width: 24px;
   height: 24px;
+}
+
+.clear-all {
+  font-weight: bold;
+  color: red;
 }
 </style>
