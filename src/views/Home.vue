@@ -91,13 +91,8 @@ const onDelete = (index: number) => {
       </ul>
     </div>
     <div class="footer" v-if="list && list.length > 0">
-      <div class="allChecked-container">
-        <input
-          type="checkbox"
-          :checked="allChecked"
-          class="checkbox"
-          @change="toggleChecked"
-        />
+      <div class="allChecked-container" @click="toggleChecked">
+        <input type="checkbox" :checked="allChecked" class="checkbox" />
         <label class="allChecked-label">全部标记为已完成</label>
       </div>
       <div>
@@ -111,10 +106,12 @@ const onDelete = (index: number) => {
 .todo-conainter {
   padding: 20px;
 }
+
 .header {
   display: flex;
   flex-wrap: wrap;
 }
+
 .input-class {
   margin-right: 20px;
   padding: 10px;
@@ -125,6 +122,7 @@ const onDelete = (index: number) => {
   border: 1px solid rgba(200, 200, 200);
   border-radius: 5px;
 }
+
 .btn {
   padding: 10px;
   height: 48px;
@@ -145,13 +143,20 @@ ul,
 li {
   list-style: none;
 }
+
 .allChecked-container {
-  display: flex;
-  align-items: center;
+  display: inline-flex;
   margin-bottom: 20px;
+  cursor: pointer;
 }
 
 .allChecked-label {
   margin-left: 10px;
+}
+
+.checkbox {
+  margin-right: 10px;
+  width: 24px;
+  height: 24px;
 }
 </style>
