@@ -1,10 +1,4 @@
 <script lang="ts" setup>
-interface Todo {
-  status: boolean;
-  text: string;
-  editable: boolean; //是否可编辑
-}
-
 const props = defineProps({
   todo: {
     type: Object,
@@ -23,23 +17,20 @@ const onDelete = () => {
 
 /**
  * 编辑
- * @param item
  */
-const onClickInput = () => {};
+const onClickInput = () => {
+  props.todo.editable = true;
+};
 
 /**
  * 确认修改
- * @param item
  */
-const onConfirm = () => {};
-
-/**
- * input失焦
- * @param item
- * @param index
- * @param e
- */
-const onBlurEdit = () => {};
+const onConfirmEdit = () => {
+  if (!props.todo.text.trim()) {
+    emit("on-delete");
+  }
+  props.todo.editable = false;
+};
 </script>
 
 <template>
@@ -53,9 +44,9 @@ const onBlurEdit = () => {};
           type="text"
           v-model="props.todo.text"
           @click="onClickInput"
-          @blur="onBlurEdit"
+          @blur="onConfirmEdit"
         />
-        <button class="btn-confirm" @click="onConfirm" v-if="props.todo.editable">
+        <button class="btn-confirm" @click="onConfirmEdit" v-if="props.todo.editable">
           确认
         </button>
       </b>
