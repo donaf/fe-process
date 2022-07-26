@@ -1,29 +1,16 @@
 <script lang="ts" setup>
-import { ref, reactive, computed } from "vue";
+import { ref, watch } from "vue";
 import TodoItem from "../components/TodoItem.vue";
-
-// TODO interface抽离
-interface Todo {
-  status: boolean;
-  text: string;
-  editable: boolean; //是否可编辑
-}
+import { useTodoStore } from "../store/modules/todo/index";
 
 let text = ref("");
 
+const todoStore = useTodoStore();
+
 const allChecked = ref(false); // 全选
-const list: Todo[] = reactive([
-  {
-    status: true,
-    editable: false,
-    text: "初始化",
-  },
-  {
-    status: false,
-    editable: false,
-    text: "编写html",
-  },
-]);
+watch(todoStore.todos, (todos) => {
+  allChecked.value = todos.every((item) => item.status);
+});
 
 /**
  * 输入框
@@ -39,29 +26,18 @@ const onInput = (e: any) => {
  * 新增
  */
 const add = () => {
-  let todo = {
-    status: false,
-    editable: false,
-    text: text.value,
-  };
-  list.push(todo);
+  todoStore.addTodo(text.value);
   text.value = "";
 };
-
-const leftNum = computed(() => list.filter((item) => !item.status).length);
 
 /**
  * 全选
  */
 const toggleChecked = () => {
   allChecked.value = !allChecked.value;
-  list.forEach((item) => {
+  todoStore.todos.forEach((item) => {
     item.status = allChecked.value;
   });
-};
-
-const onDelete = (index: number) => {
-  list.splice(index, 1);
 };
 </script>
 
@@ -79,24 +55,24 @@ const onDelete = (index: number) => {
       />
       <button class="btn" @click="add" :disabled="!text.trim().length">添加</button>
     </div>
-    <div class="content" v-if="list && list.length > 0">
+    <div class="content" v-if="todoStore.fiterTodos && todoStore.fiterTodos.length > 0">
       <h1 class="title">列表</h1>
       <ul>
         <TodoItem
-          v-for="(todo, index) in list"
+          v-for="(todo, index) in todoStore.fiterTodos"
           :key="index"
           :todo="todo"
-          @on-delete="onDelete(index)"
+          @on-delete="todoStore.deleteTodo(index)"
         />
       </ul>
     </div>
-    <div class="footer" v-if="list && list.length > 0">
+    <div class="footer" v-if="todoStore.todos && todoStore.todos.length > 0">
       <div class="allChecked-container" @click="toggleChecked">
         <input type="checkbox" :checked="allChecked" class="checkbox" />
         <label class="allChecked-label">全部标记为已完成</label>
       </div>
       <div>
-        剩 <b>{{ leftNum }}</b> / 总 <b> {{ list.length }} </b>
+        剩 <b>{{ todoStore.leftNum }}</b> / 总 <b> {{ todoStore.todos.length }} </b>
       </div>
     </div>
   </div>
